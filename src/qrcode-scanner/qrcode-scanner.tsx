@@ -1,5 +1,5 @@
 import React, { useEffect, useId } from 'react';
-import { Html5QrcodeScanner } from 'html5-qrcode';
+import { Html5Qrcode } from 'html5-qrcode';
 import {
   QrcodeErrorCallback,
   QrcodeSuccessCallback,
@@ -17,16 +17,18 @@ const QRCodeScanner = ({
   ...props
 }: QRCodeScannerProps) => {
   const id = useId();
-  const mountedRef = useRef<Html5QrcodeScanner>();
+  const html5QrcodeRef = useRef<any>();
   useEffect(() => {
-    if (!mountedRef.current) {
-      const html5QrcodeScanner = new Html5QrcodeScanner(
-        id,
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        /* verbose= */ false
+    if (!html5QrcodeRef.current) {
+      const html5QrCode = new Html5Qrcode(id);
+      const config = { fps: 1, qrbox: { width: 250, height: 250 } };
+      html5QrCode.start(
+        { facingMode: 'environment' },
+        config,
+        onSuccess,
+        onFailure
       );
-      html5QrcodeScanner.render(onSuccess, onFailure);
-      mountedRef.current = html5QrcodeScanner;
+      html5QrcodeRef.current = html5QrCode;
     }
   }, []);
   return <div id={id} {...props}></div>;
